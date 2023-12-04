@@ -9,7 +9,7 @@
 * We have the task, as data analysts to clean up and explore the data, gain some insights and make recommendations.
 
 ### Connect the data
-The entire project has been adapted to be run in [a ](https://sqliteonline.com/) \
+The entire project has been adapted to be run in a [SQL Lite](https://sqliteonline.com/) web instance\
 Since SQL Lite has limitations in uploading data, we separate the `csv` file into smaller chunks.
 
 1. After uploading the data, we proceed to combine all chunks.
