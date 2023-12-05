@@ -73,14 +73,14 @@ ORDER BY Avg_Price_USD DESC
 SELECT 	prime_genre,
       	track_name,
       	price
-FROM (
-  	SELECT
-        	prime_genre,
-          	track_name,
-          	price,
-          	RANK() OVER(PARTITION BY prime_genre ORDER BY price DESC, rating_count_tot DESC) AS rank
+FROM
+(	SELECT
+        prime_genre,
+        track_name,
+        price,
+        RANK() OVER(PARTITION BY prime_genre ORDER BY price DESC, rating_count_tot DESC) AS rank
     	FROM AppleStore
- 	) AS a
+) AS a
 WHERE a.rank = 1 OR a.rank = 2
 ```
 The most expensive apps belong to the Education genre. They are charging around **USD$ 300 and USD$ 250** a license.
