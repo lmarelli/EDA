@@ -48,42 +48,40 @@ WHERE app_desc IS NULL
 * Number of Apps by Genre, Paid
 
 ```
-SELECT prime_genre,
-		COUNT(*) AS NumApps,
-        avg(user_rating) AS Avg_Rating
+SELECT 	prime_genre,
+	COUNT(*) AS NumApps,
+        AVG(user_rating) AS Avg_Rating
 FROM AppleStore
-Where price = 0
-Group by prime_genre
-ORDER By NumApps DESC
+WHERE price = 0
+GROUP BY prime_genre
+ORDER BY NumApps DESC
 
-SELECT prime_genre,
-		COUNT(*) AS NumApps,
+SELECT 	prime_genre,
+	COUNT(*) AS NumApps,
         ROUND(avg(user_rating),2) AS Avg_Rating,
         ROUND(avg(price),2) AS Avg_Price_USD,
-        max(price) AS Max_Price_USD
+        MAX(price) AS Max_Price_USD
 FROM AppleStore
-Where price > 0
-Group by prime_genre
-ORDER By Avg_Price_USD DESC
+WHERE price > 0
+GROUP BY prime_genre
+ORDER BY Avg_Price_USD DESC
 ```
 
 4. Something about the high price of some apps caught my eye, I wanted to know more about these expensive apps.
 * Highest paid apps by genre
  ```
-SELECT prime_genre,
-      track_name,
-      price
+SELECT 	prime_genre,
+      	track_name,
+      	price
 FROM (
-  SELECT
-          prime_genre,
-          track_name,
-          price,
-          RANK() OVER(PARTITION BY prime_genre ORDER BY price DESC, rating_count_tot DESC) AS rank
-    FROM
-          AppleStore
-  	) AS a
-WHERE 
-a.rank = 1 OR a.rank = 2	
+  	SELECT
+        	prime_genre,
+          	track_name,
+          	price,
+          	RANK() OVER(PARTITION BY prime_genre ORDER BY price DESC, rating_count_tot DESC) AS rank
+    	FROM AppleStore
+ 	) AS a
+WHERE a.rank = 1 OR a.rank = 2
 ```
 The most expensive apps belong to the Education genre. They are charging around **USD$ 300 and USD$ 250** a license.
 
@@ -92,38 +90,41 @@ The most expensive apps belong to the Education genre. They are charging around 
 5. Trying to get a better overview of App Ratings
 * The average rating is around 3.5
 ```
-SELECT min(user_rating) AS MinRating,
-	   max(user_rating) AS MaxRating,
-       avg(user_rating) AS AvgRating
-From AppleStore
+SELECT	MIN(user_rating) AS MinRating,
+	MAX(user_rating) AS MaxRating,
+       	AVG(user_rating) AS AvgRating
+FROM AppleStore
 ```
 ---
 6. Does paid Apps have a higher rating?
 * Short Answer: Yes, but slightly.
 ```
-SELECT CASE 
-			When price > 0 then 'Paid'
-            Else 'Free'
-            End as App_Type,
-       avg(user_rating) AS Avg_Rating,
-       count(user_rating) AS AppCount
-From AppleStore
-GROUP By App_Type
+SELECT
+CASE 
+	WHEN price > 0 then 'Paid'
+	ELSE 'Free'
+	END AS App_Type,
+AVG(user_rating) AS Avg_Rating,
+COUNT(user_rating) AS AppCount
+FROM AppleStore
+GROUP BY App_Type
 ```
 \
 7. Do apps with more supported languages have a better rating?
 * Not really, apps with 10-30 supported languages have a better rating than those with over 30 supported languages.
 ```
-SELECT CASE 
-			When lang_num < 10 then '<10 languages'
-            When lang_num BETWEEN 10 AND 30 then '10-30 languages'
-            ELSE '>30 languages'
-            End as language_bucket,
-       avg(user_rating) AS Avg_Rating,
-       avg(price) AS Avg_Price
-From AppleStore
-GROUP By language_bucket        
-Order By Avg_Rating desc
+SELECT
+CASE
+	WHEN lang_num < 10 then '<10 languages'
+	WHEN lang_num BETWEEN 10 AND 30 then '10-30 languages'
+        ELSE '>30 languages'
+        END AS language_bucket,
+avg(user_rating) AS Avg_Rating,
+avg(price) AS Avg_Price
+
+FROM AppleStore
+GROUP BY language_bucket        
+ORDER BY Avg_Rating desc
 ```
 \
 8. What is the genre with the lowest average rating?
@@ -143,19 +144,20 @@ LIMIT 10
 9. Is there any correlation between the length of the app description?
 * Apps with longer descriptions tend to have better ratings. Users like to have well-documented apps.
 ```
-SELECT CASE
-			When length(b.app_desc) < 500 THen 'Short'
-            When length(b.app_desc) between 500 AND 1000 THen 'Medium'
-            Else 'Long'
-            End as description_lenght_bucket,
-            avg(a.user_rating) as Avg_Rating,
-            COUNT(a.user_rating) AS SumCount
-            
-From 
+SELECT
+CASE
+	WHEN length(b.app_desc) < 500 THEN 'Short'
+	WHEN length(b.app_desc) between 500 AND 1000 THEN 'Medium'
+        ELSE 'Long'
+        END AS description_lenght_bucket,
+avg(a.user_rating) as Avg_Rating,
+COUNT(a.user_rating) AS SumCount
+
+FROM
 	AppleStore As a
-join
+JOIN
 	appleStore_description_combined as b
-using (id)
+USING (id)
 GROUP BY description_lenght_bucket
 ORDER by Avg_Rating DESC;
 ```
