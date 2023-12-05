@@ -67,10 +67,9 @@ Group by prime_genre
 ORDER By Avg_Price_USD DESC
 ```
 
-4. 
+4. Something about the high price of some apps caught my eye, I wanted to know more about these expensive apps.
 * Highest paid apps by genre
- 
-```
+ ```
 SELECT prime_genre,
       track_name,
       price
@@ -84,17 +83,24 @@ FROM (
           AppleStore
   	) AS a
 WHERE 
-a.rank = 1 	
+a.rank = 1 OR a.rank = 2	
 ```
--- Overview of App Ratings
+The most expensive apps belong to the Education genre. They are charging around **USD$ 300 and USD$ 250** a license.
 
+---
+
+5. Trying to get a better overview of App Ratings
+* The average rating is around 3.5
+```
 SELECT min(user_rating) AS MinRating,
 	   max(user_rating) AS MaxRating,
        avg(user_rating) AS AvgRating
 From AppleStore
-
--- Paid Apps have a higher rating?
-
+```
+---
+6. Does paid Apps have a higher rating?
+* Short Answer: Yes, but slightly.
+```
 SELECT CASE 
 			When price > 0 then 'Paid'
             Else 'Free'
@@ -103,9 +109,11 @@ SELECT CASE
        count(user_rating) AS AppCount
 From AppleStore
 GROUP By App_Type
-
--- Supported languages have better rating?
-
+```
+\
+7. Do apps with more supported languages have a better rating?
+* Not really, apps with 10-30 supported languages have a better rating than those with over 30 supported languages.
+```
 SELECT CASE 
 			When lang_num < 10 then '<10 languages'
             When lang_num BETWEEN 10 AND 30 then '10-30 languages'
@@ -116,19 +124,26 @@ SELECT CASE
 From AppleStore
 GROUP By language_bucket        
 Order By Avg_Rating desc
-
--- Genre with lowest ratings?
-
+```
+\
+8. What is the genre with the lowest average rating?
+* Catalogs.
+* Finance.
+* Books.
+Catalog Apps could be a good niche.
+```
 SELECT prime_genre,
 	avg(user_rating) AS Avg_Rating
-From AppleStore
+FROM AppleStore
 GROUP by prime_genre
 ORDER By Avg_Rating ASC
-limit 10
-
--- Correlation between lenght of description?
-
-SELECT CASe
+LIMIT 10
+```
+\
+9. Is there any correlation between the length of the app description?
+* Apps with longer descriptions tend to have better ratings. Users like to have well-documented apps.
+```
+SELECT CASE
 			When length(b.app_desc) < 500 THen 'Short'
             When length(b.app_desc) between 500 AND 1000 THen 'Medium'
             Else 'Long'
@@ -143,3 +158,4 @@ join
 using (id)
 GROUP BY description_lenght_bucket
 ORDER by Avg_Rating DESC;
+```
